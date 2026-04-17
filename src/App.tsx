@@ -1,27 +1,33 @@
 import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
-import Header from './components/Layout/Header';
-import ProductGrid from './components/Products/ProductGrid';
-import Bill from './components/Bill/Bill';
+import Navbar from './components/layout/Navbar';
+import ShopPage from './pages/ShopPage';
+import CartPage from './pages/CartPage';
 
-const App: React.FC = () => {
-  return (
-    <Provider store={store}>
+const App: React.FC = () => (
+  <Provider store={store}>
+    <BrowserRouter>
       <div className="app">
-        <Header />
-        <main className="app-main">
-          <div className="app-layout">
-            <ProductGrid />
-            <Bill />
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<ShopPage />} />
+          <Route path="/cart" element={<CartPage />} />
+        </Routes>
+        <footer className="footer">
+          <span className="footer__copy">
+            © 2026 FreshMart Ltd — All rights reserved
+          </span>
+          <div className="footer__links">
+            <a href="#" className="footer__link">Privacy</a>
+            <a href="#" className="footer__link">Terms</a>
+            <a href="#" className="footer__link">Contact</a>
           </div>
-        </main>
-        <footer className="app-footer">
-          <p>© 2024 FreshMart · Prices include VAT · Offers subject to availability</p>
         </footer>
       </div>
-    </Provider>
-  );
-};
+    </BrowserRouter>
+  </Provider>
+);
 
 export default App;
