@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -6,27 +5,28 @@ export interface Product {
   unit: string;
   emoji: string;
   category: string;
+  description: string;
+  origin: string;
+  badge?: string;
 }
-
 
 export interface CartItem {
   product: Product;
   quantity: number;
 }
 
-export type OfferType = 'BUY_N_GET_M_FREE' | 'MULTIBUY';
+export type OfferType = 'BUY_N_GET_M_FREE' | 'MULTIBUY' | 'PERCENTAGE_OFF';
 
 export interface SpecialOffer {
   id: string;
   productId: string;
   description: string;
   type: OfferType;
- 
   buyQuantity?: number;
   freeQuantity?: number;
-
   multiQuantity?: number;
   multiPrice?: number;
+  percentOff?: number;
 }
 
 export interface AppliedOffer {
@@ -52,7 +52,6 @@ export interface ItemBreakdown {
   unitPrice: number;
   lineTotal: number;
 }
-
 
 export interface CartState {
   items: CartItem[];
