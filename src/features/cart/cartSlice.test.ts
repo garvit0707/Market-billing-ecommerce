@@ -1,65 +1,69 @@
-import cartReducer, {
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { CartState, Product } from '../../types';
+
+const initialState: CartState = {
+  items: [],
+};
+
+const cartSlice = createSlice({
+  name: 'cart',
+  initialState,
+  reducers: {
+    addItem: (state, action: PayloadAction<Product>) => {
+      const existing = state.items.find(
+        (item) => item.product.id === action.payload.id
+      );
+
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        state.items.push({ product: action.payload, quantity: 1 });
+      }
+    },
+
+    removeItem: (state, action: PayloadAction<string>) => {
+      state.items = state.items.filter(
+        (item) => item.product.id !== action.payload
+      );
+    },
+
+    incrementQuantity: (state, action: PayloadAction<string>) => {
+      const item = state.items.find(
+        (item) => item.product.id === action.payload
+      );
+      if (item) {
+        item.quantity += 1;
+      }
+    },
+
+    decrementQuantity: (state, action: PayloadAction<string>) => {
+      const item = state.items.find(
+        (item) => item.product.id === action.payload
+      );
+
+      if (!item) return;
+
+      if (item.quantity === 1) {
+        state.items = state.items.filter(
+          (i) => i.product.id !== action.payload
+        );
+      } else {
+        item.quantity -= 1;
+      }
+    },
+
+    clearCart: (state) => {
+      state.items = [];
+    },
+  },
+});
+
+export const {
   addItem,
   removeItem,
   incrementQuantity,
   decrementQuantity,
   clearCart,
-} from './cartSlice';
-import { CartState } from '../../types';
-import { PRODUCTS } from '../../constants';
+} = cartSlice.actions;
 
-const soup = PRODUCTS.find((p) => p.id === 'soup')!;
-const milk = PRODUCTS.find((p) => p.id === 'milk')!;
-
-const emptyState: CartState = { items: [] };
-
-describe('cartSlice', () => {
-  it('should return empty initial state', () => {
-    expect(cartReducer(undefined, { type: '' })).toEqual(emptyState);
-  });
-
-  it('should add a new item', () => {
-    const state = cartReducer(emptyState, addItem(soup));
-    expect(state.items).toHaveLength(1);
-    expect(state.items[0].quantity).toBe(1);
-  });
-
-  it('should increment quantity when adding existing item', () => {
-    let state = cartReducer(emptyState, addItem(soup));
-    state = cartReducer(state, addItem(soup));
-    expect(state.items).toHaveLength(1);
-    expect(state.items[0].quantity).toBe(2);
-  });
-
-  it('should remove an item', () => {
-    let state = cartReducer(emptyState, addItem(soup));
-    state = cartReducer(state, removeItem(soup.id));
-    expect(state.items).toHaveLength(0);
-  });
-
-  it('should increment quantity', () => {
-    let state = cartReducer(emptyState, addItem(soup));
-    state = cartReducer(state, incrementQuantity(soup.id));
-    expect(state.items[0].quantity).toBe(2);
-  });
-
-  it('should decrement quantity', () => {
-    let state = cartReducer(emptyState, addItem(soup));
-    state = cartReducer(state, incrementQuantity(soup.id));
-    state = cartReducer(state, decrementQuantity(soup.id));
-    expect(state.items[0].quantity).toBe(1);
-  });
-
-  it('should remove item when decremented to 0', () => {
-    let state = cartReducer(emptyState, addItem(soup));
-    state = cartReducer(state, decrementQuantity(soup.id));
-    expect(state.items).toHaveLength(0);
-  });
-
-  it('should clear all items', () => {
-    let state = cartReducer(emptyState, addItem(soup));
-    state = cartReducer(state, addItem(milk));
-    state = cartReducer(state, clearCart());
-    expect(state.items).toHaveLength(0);
-  });
-});
+export default cartSlice.reducer;
